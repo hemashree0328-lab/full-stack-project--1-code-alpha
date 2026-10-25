@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hema Store{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'store/style.css' %}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container navbar">
+        <a href="{% url 'product_list' %}" class="brand">
+            <span class="brand-icon">H</span>
+            <span>Hema <span class="brand-highlight">Store</span></span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="{% url 'product_list' %}">Home</a>
+            <a href="{% url 'product_list' %}">Products</a>
+            <a href="{% url 'cart' %}">My Cart</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+
+            {% if user.is_authenticated %}
+                <span class="welcome-user">
+                    Hi, {{ user.username }}
+                </span>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}" class="nav-register">
+                    Register
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    {% if messages %}
+        <div class="container messages-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-content">
+        <div>
+            <div class="footer-brand">Hema Store</div>
+            <p>Your favourite place for everyday shopping.</p>
+        </div>
+
+        <div class="footer-links">
+            <a href="{% url 'product_list' %}">Home</a>
+            <a href="{% url 'cart' %}">Shopping Cart</a>
+            <a href="{% url 'my_orders' %}">My Orders</a>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        © {% now "Y" %} Hema Store. All rights reserved.
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+```html
+{% extends 'store/base.html' %}
+
+{% block title %}Checkout | Hema Store{% endblock %}
+
+{% block content %}
+<style>
+    .checkout-page {
+        max-width: 1050px;
+        margin: 35px auto;
+    }
+
+    .checkout-heading {
+        margin-bottom: 25px;
+    }
+
+    .checkout-heading h1 {
+        margin: 0 0 8px;
+        color: var(--navy, #111827);
+        font-size: 32px;
+    }
+
+    .checkout-heading p {
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        align-items: start;
+    }
+
+    .checkout-card {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+    }
+
+    .checkout-card h2 {
+        font-size: 21px;
+        margin: 0 0 20px;
+        color: #111827;
+    }
+
+    .checkout-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .checkout-item strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #111827;
+    }
+
+    .checkout-muted {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .checkout-price {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .checkout-total {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 2px solid #e5e7eb;
+        font-size: 21px;
+        font-weight: 800;
+        color: #15803d;
+    }
+
+    .checkout-form label {
+        display: block;
+        margin: 16px 0 7px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .checkout-form input,
+    .checkout-form textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        font-size: 15px;
+        font-family: inherit;
+        box-sizing: border-box;
+        background: #fff;
+    }
+
+    .checkout-form input:focus,
+    .checkout-form textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .checkout-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .checkout-submit {
+        display: block;
+        width: 100%;
+        margin-top: 24px;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        background: #15803d;
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .checkout-submit:hover {
+        background: #166534;
+    }
+
+    .checkout-submit:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .checkout-error {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 13px;
+        margin-bottom: 18px;
+        border-radius: 9px;
+    }
+
+    .checkout-back {
+        display: inline-block;
+        margin-top: 20px;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .checkout-back:hover {
+        text-decoration: underline;
+    }
+
+    .checkout-empty {
+        padding: 20px 0;
+        color: #6b7280;
+    }
+
+    .checkout-secure {
+        margin-top: 16px;
+        text-align: center;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    @media (max-width: 750px) {
+        .checkout-page {
+            margin: 20px auto;
+        }
+
+        .checkout-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .checkout-heading h1 {
+            font-size: 27px;
+        }
+
+        .checkout-card {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="checkout-page">
+
+    <div class="checkout-heading">
+        <h1>Secure Checkout</h1>
+        <p>Review your items and enter your delivery details.</p>
+    </div>
+
+    {% if error %}
+        <div class="checkout-error">{{ error }}</div>
+    {% endif %}
+
+    <div class="checkout-layout">
+
+        <!-- ORDER SUMMARY -->
+        <section class="checkout-card">
+            <h2>Order Summary</h2>
+
+            {% for item in cart_items %}
+                <div class="checkout-item">
+                    <div>
+                        <strong>{{ item.product.name }}</strong>
+                        <div class="checkout-muted">
+                            Quantity: {{ item.quantity }}
+                        </div>
+                    </div>
+
+                    <div class="checkout-price">
+                        ₹{{ item.subtotal|floatformat:2 }}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="checkout-empty">
+                    Your cart is empty. Add products before checkout.
+                </p>
+            {% endfor %}
+
+            <div class="checkout-total">
+                <span>Total</span>
+                <span>₹{{ total|floatformat:2 }}</span>
+            </div>
+
+            <a class="checkout-back" href="{% url 'cart' %}">
+                ← Back to Cart
+            </a>
+        </section>
+
+        <!-- CUSTOMER DETAILS -->
+        <section class="checkout-card">
+            <h2>Delivery Details</h2>
+
+            <form
+                method="POST"
+                action="{% url 'checkout' %}"
+                class="checkout-form"
+            >
+                {% csrf_token %}
+
+                <label for="name">Full Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    autocomplete="name"
+                    required
+                >
+
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="phone">Phone Number</label>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    autocomplete="tel"
+                    required
+                >
+
+                <label for="address">Delivery Address</label>
+                <textarea
+                    id="address"
+                    name="address"
+                    autocomplete="street-address"
+                    placeholder="Enter your complete delivery address"
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="checkout-submit"
+                    {% if not cart_items %}disabled{% endif %}
+                >
+                    Place Order · ₹{{ total|floatformat:2 }}
+                </button>
+
+                <p class="checkout-secure">
+                    🔒 Please check your delivery details before placing your order.
+                </p>
+            </form>
+        </section>
+
+    </div>
+
+    <a class="checkout-back" href="{% url 'product_list' %}">
+        ← Continue Shopping
+    </a>
+
+</div>
+{% endblock %}
+```

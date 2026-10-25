@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Hema Store</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f5f9;
+            margin: 0;
+            padding: 30px;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px #00000012;
+        }
+
+        h1 {
+            color: #176b45;
+        }
+
+        .order {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 18px 0;
+        }
+
+        .amount {
+            color: #16834a;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            background: #176b45;
+            color: white;
+            padding: 12px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        a:hover {
+            background: #104b30;
+        }
+
+        .empty {
+            padding: 20px 0;
+            color: #666;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>My Orders</h1>
+
+        {% if orders %}
+            {% for order in orders %}
+                <div class="order">
+
+                    <h3>Order #{{ order.id }}</h3>
+
+                    <p>
+                        <strong>Customer:</strong>
+                        {{ order.name }}
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        {{ order.email }}
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong>
+                        {{ order.phone }}
+                    </p>
+
+                    <p>
+                        <strong>Address:</strong>
+                        {{ order.address }}
+                    </p>
+
+                    <p class="amount">
+                        Total: ₹{{ order.total_amount }}
+                    </p>
+
+                    <p>
+                        <strong>Ordered on:</strong>
+                        {{ order.created_at|date:"d M Y, h:i A" }}
+                    </p>
+
+                    <p>
+                        <strong>Order Status:</strong>
+
+                        {% if order.status == 'Pending' %}
+                            <span class="status" style="color: #d97706;">
+                                🟠 Pending
+                            </span>
+                        {% elif order.status == 'Shipped' %}
+                            <span class="status" style="color: #2563eb;">
+                                🚚 Shipped
+                            </span>
+                        {% elif order.status == 'Delivered' %}
+                            <span class="status" style="color: #16a34a;">
+                                ✅ Delivered
+                            </span>
+                        {% else %}
+                            <span class="status">
+                                {{ order.status }}
+                            </span>
+                        {% endif %}
+                    </p>
+
+                    <!-- Track Order Button -->
+                    <a href="{% url 'track_order' order.id %}">
+                        📦 Track Order
+                    </a>
+
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <p class="empty">
+                You haven't placed any orders yet.
+            </p>
+        {% endif %}
+
+        <a href="{% url 'product_list' %}">
+            Continue Shopping
+        </a>
+    </div>
+</body>
+</html>

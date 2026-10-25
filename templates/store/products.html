@@ -1,0 +1,214 @@
+```django
+{% extends 'store/base.html' %}
+
+{% block title %}Products | Hema Store{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+
+        <!-- HERO SECTION -->
+        <div class="hero">
+            <div class="hero-content">
+                <span class="hero-label">WELCOME TO HEMA STORE</span>
+
+                <h1>
+                    Find your next<br>
+                    <span class="hero-highlight">favourite thing.</span>
+                </h1>
+
+                <p>
+                    Discover quality products, explore the latest
+                    essentials, and enjoy a simple shopping experience.
+                </p>
+
+                <a href="#products" class="btn hero-btn">
+                    Explore Products →
+                </a>
+            </div>
+
+            <div class="hero-decoration">
+                <span class="hero-circle">H</span>
+                <span class="hero-small-circle"></span>
+            </div>
+        </div>
+
+        <!-- SEARCH AND CATEGORY FILTER -->
+        <div class="search-section">
+            <div class="search-heading">
+                <div>
+                    <h2 class="section-heading">Find your products</h2>
+                    <p class="section-description">
+                        Search by name or choose a category.
+                    </p>
+                </div>
+            </div>
+
+            <form method="GET"
+                  action="{% url 'product_list' %}"
+                  class="filter-form">
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="🔍 Search products..."
+                    value="{{ search|default:'' }}"
+                    aria-label="Search products"
+                >
+
+                <select name="category" aria-label="Choose category">
+                    <option value="">All Categories</option>
+
+                    {% for category in categories %}
+                        <option
+                            value="{{ category.id }}"
+                            {% if selected_category == category.id|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="search-button">
+                    Search
+                </button>
+
+                <a href="{% url 'product_list' %}" class="clear-btn">
+                    Clear
+                </a>
+            </form>
+        </div>
+
+        <!-- PRODUCT SECTION -->
+        <div id="products" class="products-section">
+            <div class="products-heading">
+                <div>
+                    <h2 class="section-heading">Explore our collection</h2>
+                    <p class="section-description">
+                        Find something you'll love.
+                    </p>
+                </div>
+
+                <span class="results-label">
+                    {% if products %}
+                        Products available
+                    {% else %}
+                        No results
+                    {% endif %}
+                </span>
+            </div>
+
+            {% if products %}
+                <div class="product-grid">
+
+                    {% for product in products %}
+                        <article class="product-card">
+
+                            <a
+                                href="{% url 'product_detail' product.id %}"
+                                class="product-image-link"
+                                aria-label="View {{ product.name }}"
+                            >
+                                {% if product.image %}
+                                    <img
+                                        src="{{ product.image }}"
+                                        alt="{{ product.name }}"
+                                        class="product-image"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    <div class="product-image image-placeholder">
+                                        <span>🛍️</span>
+                                        <span>Image coming soon</span>
+                                    </div>
+                                {% endif %}
+                            </a>
+
+                            <div class="product-info">
+
+                                {% if product.category %}
+                                    <span class="category">
+                                        {{ product.category.name }}
+                                    </span>
+                                {% endif %}
+
+                                <h3 class="product-name">
+                                    {{ product.name }}
+                                </h3>
+
+                                <p class="product-description">
+                                    {{ product.description|truncatewords:15 }}
+                                </p>
+
+                                <div class="product-price">
+                                    ₹{{ product.price }}
+                                </div>
+
+                                <div class="product-stock">
+                                    {% if product.stock > 0 %}
+                                        <span class="stock-in">
+                                            ✓ In Stock
+                                        </span>
+
+                                        <span class="stock-quantity">
+                                            {{ product.stock }} available
+                                        </span>
+                                    {% else %}
+                                        <span class="stock-out">
+                                            Out of Stock
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="product-actions">
+                                    <a
+                                        href="{% url 'product_detail' product.id %}"
+                                        class="btn details-btn"
+                                    >
+                                        View Details
+                                    </a>
+
+                                    {% if product.stock > 0 %}
+                                        <a
+                                            href="{% url 'add_to_cart' product.id %}"
+                                            class="btn cart-btn"
+                                        >
+                                            + Add to Cart
+                                        </a>
+                                    {% else %}
+                                        <span class="btn disabled-btn">
+                                            Out of Stock
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </article>
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+                <div class="no-products">
+                    <div class="empty-icon">🔎</div>
+
+                    <h2>No products found</h2>
+
+                    <p>
+                        We couldn't find a match. Try another search
+                        or select a different category.
+                    </p>
+
+                    <a href="{% url 'product_list' %}" class="btn">
+                        View All Products
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+```

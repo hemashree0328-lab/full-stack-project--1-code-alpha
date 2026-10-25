@@ -1,0 +1,195 @@
+```django
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} | Hema Store{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb">
+            <a href="{% url 'product_list' %}">Home</a>
+            <span>›</span>
+            <span>{{ product.name }}</span>
+        </div>
+
+        <div class="detail-layout">
+
+            <!-- PRODUCT IMAGE -->
+            <div class="detail-image-panel">
+                {% if product.image %}
+                    <img
+                        src="{{ product.image }}"
+                        alt="{{ product.name }}"
+                        class="detail-image"
+                    >
+                {% else %}
+                    <div class="detail-image-placeholder">
+                        <span>🛍️</span>
+                        <p>Product image unavailable</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- PRODUCT INFORMATION -->
+            <div class="detail-info">
+
+                {% if product.category %}
+                    <span class="category">
+                        {{ product.category.name }}
+                    </span>
+                {% endif %}
+                
+<hr>
+
+<h2>⭐ Customer Reviews</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+{% for review in product.reviews.all %}
+    <div style="border-bottom: 1px solid #ddd; padding: 12px 0;">
+        <strong>{{ review.user.username }}</strong>
+
+        <p style="color: #e5a000; font-size: 20px;">
+            {% for star in "12345" %}
+                {% if forloop.counter <= review.rating %}
+                    ★
+                {% else %}
+                    ☆
+                {% endif %}
+            {% endfor %}
+        </p>
+
+        <p>{{ review.comment }}</p>
+
+        <small>{{ review.created_at|date:"d M Y" }}</small>
+    </div>
+{% empty %}
+    <p>No reviews yet. Be the first to review this product!</p>
+{% endfor %}
+
+<hr>
+
+<h3>Write Your Review</h3>
+
+{% if user.is_authenticated %}
+    <form method="POST"
+          action="{% url 'add_review' product.id %}">
+        {% csrf_token %}
+
+        <label for="rating">Your Rating:</label>
+        <select name="rating" id="rating" required>
+            <option value="">Choose stars</option>
+            <option value="5">★★★★★ - Excellent</option>
+            <option value="4">★★★★ - Very Good</option>
+            <option value="3">★★★ - Good</option>
+            <option value="2">★★ - Fair</option>
+            <option value="1">★ - Poor</option>
+        </select>
+
+        <br><br>
+
+        <label for="comment">Your Comment:</label><br>
+        <textarea
+            name="comment"
+            id="comment"
+            rows="4"
+            maxlength="500"
+            required
+            placeholder="Share your experience..."
+            style="width: 100%; max-width: 450px; padding: 10px;"
+        ></textarea>
+
+        <br><br>
+
+        <button type="submit">Submit Review</button>
+    </form>
+{% else %}
+    <p>
+        Please <a href="{% url 'login' %}">log in</a>
+        to write a review.
+    </p>
+{% endif %}
+
+
+                <p class="detail-eyebrow">HEMA STORE COLLECTION</p>
+
+                <h1 class="detail-title">{{ product.name }}</h1>
+
+                <div class="detail-price">
+                    ₹{{ product.price }}
+                </div>
+
+                <div class="detail-divider"></div>
+
+                <h3 class="detail-subheading">Product Description</h3>
+
+                <p class="detail-description">
+                    {{ product.description|default:"Discover this product from Hema Store." }}
+                </p>
+
+                <!-- STOCK AVAILABILITY -->
+                <div class="detail-stock">
+                    {% if product.stock > 0 %}
+                        <span class="stock-in">
+                            ✓ In Stock
+                        </span>
+
+                        <span class="detail-stock-count">
+                            {{ product.stock }} items available
+                        </span>
+                    {% else %}
+                        <span class="stock-out">
+                            ✕ Out of Stock
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="detail-actions">
+                    {% if product.stock > 0 %}
+                        <a
+                            href="{% url 'add_to_cart' product.id %}"
+                            class="btn detail-cart-btn"
+                        >
+                            🛒 Add to Cart
+                        </a>
+                    {% else %}
+                        <span class="btn detail-disabled-btn">
+                            Currently Unavailable
+                        </span>
+                    {% endif %}
+
+                    <a
+                        href="{% url 'product_list' %}"
+                        class="btn detail-back-btn"
+                    >
+                        ← Back to Products
+                    </a>
+                </div>
+
+                <!-- STORE BENEFITS -->
+                <div class="detail-benefits">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✓</span>
+                        <span>Quality Products</span>
+                    </div>
+
+                    <div class="benefit-item">
+                        <span class="benefit-icon">♡</span>
+                        <span>Simple Shopping</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+```

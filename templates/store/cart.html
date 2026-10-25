@@ -1,0 +1,171 @@
+```django
+{% extends 'store/base.html' %}
+
+{% block title %}My Shopping Cart | Hema Store{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+
+        <!-- CART HEADER -->
+        <div class="cart-heading">
+            <div>
+                <span class="cart-eyebrow">HEMA STORE</span>
+                <h1>My Shopping Cart 🛒</h1>
+                <p>Review your favourite products before checkout.</p>
+            </div>
+
+            <a href="{% url 'product_list' %}" class="btn btn-outline">
+                ← Continue Shopping
+            </a>
+        </div>
+
+        {% if cart_items %}
+
+        <div class="cart-layout">
+
+            <!-- CART ITEMS -->
+            <div class="cart-items">
+
+                {% for item in cart_items %}
+                <article class="cart-item">
+
+                    <!-- PRODUCT IMAGE -->
+                    <a href="{% url 'product_detail' item.product.id %}"
+                       class="cart-product-image">
+
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image }}"
+                                 alt="{{ item.product.name }}">
+                        {% else %}
+                            <div class="cart-placeholder">🛍️</div>
+                        {% endif %}
+
+                    </a>
+
+                    <!-- PRODUCT INFORMATION -->
+                    <div class="cart-product-info">
+
+                        <h3>
+                            <a href="{% url 'product_detail' item.product.id %}">
+                                {{ item.product.name }}
+                            </a>
+                        </h3>
+
+                        <p class="cart-price">
+                            ₹{{ item.product.price }}
+                            <span>per item</span>
+                        </p>
+
+                        <!-- QUANTITY CONTROLS -->
+                        <div class="cart-quantity">
+                            <span class="quantity-label">Quantity</span>
+
+                            <div class="quantity-controls">
+                                <a href="{% url 'decrease_quantity' item.product.id %}"
+                                   class="quantity-btn"
+                                   aria-label="Decrease quantity">−</a>
+
+                                <span class="quantity-value">
+                                    {{ item.quantity }}
+                                </span>
+
+                                <a href="{% url 'increase_quantity' item.product.id %}"
+                                   class="quantity-btn"
+                                   aria-label="Increase quantity">+</a>
+                            </div>
+                        </div>
+
+                        <!-- REMOVE ITEM -->
+                        <a href="{% url 'remove_from_cart' item.product.id %}"
+                           class="remove-link">
+                            🗑 Remove item
+                        </a>
+
+                    </div>
+
+                    <!-- ITEM TOTAL -->
+                    <div class="cart-item-total">
+                        <span class="item-total-label">Item total</span>
+                        <strong>₹{{ item.total_price }}</strong>
+                    </div>
+
+                </article>
+                {% endfor %}
+
+                <a href="{% url 'product_list' %}" class="continue-link">
+                    ← Add more products
+                </a>
+
+            </div>
+
+            <!-- ORDER SUMMARY -->
+            <aside class="cart-summary">
+
+                <div class="summary-header">
+                    <span class="summary-icon">🧾</span>
+                    <h2>Order Summary</h2>
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>₹{{ total }}</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <strong class="free-shipping">FREE</strong>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-row summary-total">
+                    <span>Total Amount</span>
+                    <strong>₹{{ total }}</strong>
+                </div>
+
+                <a href="{% url 'checkout' %}"
+                   class="btn btn-primary checkout-btn">
+                    Proceed to Checkout →
+                </a>
+
+                <div class="cart-trust">
+                    <span>🔒</span>
+                    <p>Your order details are handled securely.</p>
+                </div>
+
+                <div class="cart-benefit">
+                    <span>✓</span>
+                    Quality products, simple shopping
+                </div>
+
+            </aside>
+
+        </div>
+
+        {% else %}
+
+        <!-- EMPTY CART -->
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+
+            <span class="cart-eyebrow">HEMA STORE</span>
+
+            <h2>Your cart is waiting for you!</h2>
+
+            <p>
+                You haven't added any products yet.
+                Explore our collection and find something you'll love.
+            </p>
+
+            <a href="{% url 'product_list' %}" class="btn btn-primary">
+                Explore Products →
+            </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
+```

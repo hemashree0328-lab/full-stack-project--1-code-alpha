@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order | Hema Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7f4;
+            margin: 0;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px #00000012;
+        }
+        h1 { color: #174d2b; }
+        .step {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            margin: 25px 0;
+        }
+        .circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #ddd;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .completed .circle {
+            background: #218838;
+            color: white;
+        }
+        .step h3 { margin: 4px 0 6px; }
+        .step p { margin: 0; color: #666; }
+        a { color: #174d2b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Track Your Order</h1>
+
+        <p><strong>Order ID:</strong> #{{ order.id }}</p>
+        <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+        <p><strong>Current Status:</strong> {{ order.status|title }}</p>
+
+        <div class="step completed">
+            <div class="circle">✓</div>
+            <div>
+                <h3>Order Placed</h3>
+                <p>Your order has been received.</p>
+            </div>
+        </div>
+
+        <div class="step {% if order.status == 'shipped' or order.status == 'delivered' %}completed{% endif %}">
+            <div class="circle">2</div>
+            <div>
+                <h3>Shipped</h3>
+                <p>Your order is on its way.</p>
+            </div>
+        </div>
+
+        <div class="step {% if order.status == 'delivered' %}completed{% endif %}">
+            <div class="circle">3</div>
+            <div>
+                <h3>Delivered</h3>
+                <p>Your order has been delivered.</p>
+            </div>
+        </div>
+
+        <hr>
+        <p><strong>Total:</strong> ₹{{ order.total_amount }}</p>
+        <a href="{% url 'my_orders' %}">← Back to My Orders</a>
+    </div>
+</body>
+</html>
